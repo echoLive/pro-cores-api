@@ -1,0 +1,23 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<body>
+	<svg width=100 height=100>
+		<circle cx=30 cy=30 r=10></circle>
+		<circle cx=70 cy=30 r=10></circle>
+		<rect x=20 y=50 width=60 height=20></rect>
+	</svg>
+</body>
+<script>
+	d3.selectAll("svg")
+		.select("circle:nth-child(1)")
+		.attr("fill", "green");
+
+	d3.selectAll("svg")
+		.select("circle:nth-child(2)")
+		.attr("fill", "red");
+
+	d3.selectAll("svg")
+		.select("rect")
+		.attr("height", "10")
+</script>
+</html>
