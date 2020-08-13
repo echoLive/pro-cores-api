@@ -38,7 +38,17 @@ async function Update_Price(p_type, p_date, p_price) {
   });
 }
 
-const getPageContent = ( url ) => {
+async function Update_Price_EST(p_type, p_date, p_price) {
+  const myquery = { commodity_type: p_type };
+  const newvalues = { commodity_type: p_type, date: p_date, price_est: p_price }
+  Pricing.findOneAndUpdate(myquery, newvalues, { upsert: true }, function(err, doc) {
+    if (err) {
+      console.log('error', err)
+    }
+  });
+}
+
+const getPageContent = ( url, cron_type ) => {
   var options = {
       url: url,
       headers: {
@@ -77,9 +87,17 @@ const getPageContent = ( url ) => {
 
           var currentDate = new Date();
 
+          if(cron_type == 1) {
             Update_Price('pt', currentDate, XPTUSD);
             Update_Price('pd', currentDate, XPDUSD);
             Update_Price('rh', currentDate, RHOUSD);
+          } else if(cron_type == 2) {
+            Update_Price_EST('pt', currentDate, XPTUSD);
+            Update_Price_EST('pd', currentDate, XPDUSD);
+            Update_Price_EST('rh', currentDate, RHOUSD);
+          }
+
+
       }
   });
 };
@@ -88,9 +106,21 @@ cron.schedule('*/5 * * * *', () => {
   console.log('running a node-scraper every 5 mins');
   var cDate = new Date();
   console.log(cDate);
-  getPageContent(metalsdaily_url);
+  var cronType = 1;
+  getPageContent(metalsdaily_url, cronType);
 });
-getPageContent(metalsdaily_url);
+// getPageContent(metalsdaily_url, 1);
+
+cron.schedule('*/30 */14 * * *', () => {
+  console.log('running a node-scraper every 5 mins');
+  var cDate = new Date();
+  console.log(cDate);
+  var cronType = 2;
+  getPageContent(metalsdaily_url, cronType);
+}, {
+  scheduled: true,
+  timezone: "Etc/UTC"
+});
 
 
 // agenda.on('ready', async function(){
